@@ -21,7 +21,7 @@ public class Test {
         URL filePath = Test.class.getClassLoader().getResource("Test.docx");
         assert filePath != null;
         String targetPath = "D:/target.docx";
-        String desPath = "D:/apachePOI.pdf";
+        String desPath = "D:/docx4j.pdf";
 
         List<KeyInventoryDetail> details = new ArrayList<>();
         KeyInventoryDetail detail = new KeyInventoryDetail();
@@ -44,16 +44,7 @@ public class Test {
         });
         template.writeToFile(targetPath);
 
-        File inFile = new File(targetPath);
-        InputStream inputStream = new FileInputStream(inFile);
-
-        File outFile = new File(desPath);
-        OutputStream outputStream = new FileOutputStream(outFile);
-
-
-        // 使用apache POI转换
-        DocxToPDFConverter converter = new DocxToPDFConverter(inputStream, outputStream, true, true);
-        converter.convert();
+        WordUtils.convertDocxToPdf(targetPath, desPath);
 
     }
 
