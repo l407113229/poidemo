@@ -5,7 +5,6 @@ import com.deepoove.poi.config.Configure;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
 import lombok.Data;
 
-import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +20,8 @@ public class Test {
         URL filePath = Test.class.getClassLoader().getResource("Test.docx");
         assert filePath != null;
         String targetPath = "D:/target.docx";
-        String desPath = "D:/docx4j.pdf";
+        String tempPath = "D:/temp.html";
+        String desPath = "D:/html.pdf";
 
         List<KeyInventoryDetail> details = new ArrayList<>();
         KeyInventoryDetail detail = new KeyInventoryDetail();
@@ -44,8 +44,7 @@ public class Test {
         });
         template.writeToFile(targetPath);
 
-        WordUtils.convertDocxToPdf(targetPath, desPath);
-
+        DocxToPdfUtil.docx2Html(targetPath,tempPath);
     }
 
 
