@@ -3,8 +3,13 @@ package poi;
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
+import com.jacob.activeX.ActiveXComponent;
+import com.jacob.com.ComThread;
+import com.jacob.com.Dispatch;
+import com.jacob.com.Variant;
 import lombok.Data;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +21,14 @@ import java.util.List;
  */
 public class Test {
 
+    // PDF 格式
+    private static final int wdFormatPDF = 17;
+
     public static void main(String[] args) throws Exception {
         URL filePath = Test.class.getClassLoader().getResource("Test.docx");
         assert filePath != null;
         String targetPath = "D:/target.docx";
-        String tempPath = "D:/temp.html";
-        String desPath = "D:/html.pdf";
+        String desPath = "D:/jacob.pdf";
 
         List<KeyInventoryDetail> details = new ArrayList<>();
         KeyInventoryDetail detail = new KeyInventoryDetail();
@@ -43,8 +50,37 @@ public class Test {
             }
         });
         template.writeToFile(targetPath);
+        wordToPDF(targetPath, desPath);
 
-        DocxToPdfUtil.docx2Html(targetPath,tempPath);
+    }
+
+
+    static void wordToPDF(String docxPath, String pdfPath) {
+
+        ActiveXComponent app = null;
+        Dispatch doc = null;
+        try {
+            app = new ActiveXComponent("Word.Application");
+            app.setProperty("Visible", new Variant(false));
+            Dispatch docs = app.getProperty("Documents").toDispatch();
+
+
+            doc = Dispatch.call(docs, "Open", docxPath).toDispatch();
+            File tofile = new File(pdfPath);
+            if (tofile.exists()) {
+                tofile.delete();
+            }
+            Dispatch.call(doc, "SaveAs", pdfPath, wdFormatPDF);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            Dispatch.call(doc, "Close", false);
+            if (app != null) {
+                app.invoke("Quit", new Variant[]{});
+            }
+        }
+        //结束后关闭进程
+        ComThread.Release();
     }
 
 
